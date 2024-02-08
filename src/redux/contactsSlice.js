@@ -45,7 +45,7 @@ const initialState = {
   contacts: [],
   status: STATUSES.idle,
   error: null,
-  filterData: [],
+  filterData: '',
 };
 
 const contactSlice = createSlice({
