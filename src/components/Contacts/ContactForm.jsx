@@ -1,7 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsReducer';
-
-import { nanoid } from 'nanoid';
+import { apiAddContact } from '../../redux/contactsSlice';
 
 import { getContacts } from '../../redux/selectors';
 
@@ -10,31 +8,33 @@ import css from './Contact.module.css';
 export const ContactForm = () => {
   const dispatch = useDispatch();
   const contacts = useSelector(getContacts);
+
   const handleSubmit = e => {
     e.preventDefault();
     const name = e.currentTarget.elements.name.value;
-    const number = e.currentTarget.elements.number.value;
+    const phone = e.currentTarget.elements.phone.value;
 
     const formData = {
       name,
-      number,
+      phone,
     };
-    handleAddContact(formData);
-    e.target.reset();
-  };
-
-  const handleAddContact = formData => {
-    const hasDuplicate = contacts.some(
+    const hasDuplicateName = contacts.some(
       contact => contact.name.toLowerCase() === formData.name.toLowerCase()
     );
-    if (hasDuplicate) {
-      alert(`${formData.name} is already in contacts`);
+    if (hasDuplicateName) {
+      alert(`The name ${formData.name} is already in contacts`);
       return;
     }
 
-    const newContact = { ...formData, id: 'id-' + nanoid(2) };
-    const action = addContact(newContact);
-    dispatch(action);
+    const hasDuplicateNumber = contacts.some(
+      contact => contact.phone === formData.phone
+    );
+    if (hasDuplicateNumber) {
+      alert(`The phone number ${formData.phone} is already in contacts`);
+      return;
+    }
+    dispatch(apiAddContact(formData));
+    e.target.reset();
   };
 
   return (
@@ -53,7 +53,7 @@ export const ContactForm = () => {
           className={css.inputField}
           type="tel"
           placeholder="Phone number"
-          name="number"
+          name="phone"
           required
         />
         <button type="submit" className={css.contactBtn}>
